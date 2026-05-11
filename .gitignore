@@ -9,3 +9,6 @@ mlflow/mlruns/
 *.csv
 *.json
 .ipynb_checkpoints/
+logs/
+mlflow.db
+mlruns/
