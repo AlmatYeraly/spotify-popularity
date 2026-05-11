@@ -10,6 +10,9 @@ from sklearn.metrics import classification_report, accuracy_score, f1_score
 from xgboost import XGBClassifier
 import pickle
 
+MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI", "http://localhost:5000")
+mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
+
 os.makedirs("logs", exist_ok=True)
 
 logging.basicConfig(
