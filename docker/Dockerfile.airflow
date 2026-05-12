@@ -1,0 +1,12 @@
+FROM apache/airflow:2.9.0-python3.11
+
+USER root
+RUN mkdir -p /app/logs /app/data/processed /app/data/raw && \
+    chown -R 50000:0 /app
+
+USER airflow
+COPY requirements.train.txt .
+RUN pip install --no-cache-dir -r requirements.train.txt && \
+    pip install --no-cache-dir "numpy==1.26.4" --force-reinstall
+
+COPY src/ /app/src/
