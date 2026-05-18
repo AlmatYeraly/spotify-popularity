@@ -7,10 +7,12 @@ from mlflow.tracking import MlflowClient
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from contextlib import asynccontextmanager
 import pandas as pd
 
 import csv
 from pathlib import Path
+from src.config import FEATURES, MLFLOW_MODEL_NAME
 
 MONITORING_PATH = "data/monitoring/predictions.csv"
 
@@ -20,13 +22,12 @@ logger = logging.getLogger(__name__)
 MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI", "http://localhost:5000")
 mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
 
-FEATURES = [
-    'danceability', 'energy', 'key', 'loudness', 'mode',
-    'speechiness', 'acousticness', 'instrumentalness', 'liveness',
-    'valence', 'tempo', 'time_signature', 'duration_ms', 'explicit', 'year'
-]
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    load_model_and_encoder()
+    yield
 
-app = FastAPI()
+app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -42,20 +43,13 @@ label_encoder = None
 def load_model_and_encoder():
     global model, label_encoder
     client = MlflowClient()
-    versions = client.search_model_versions("name='spotify-popularity-classifier'")
-    latest = sorted(versions, key=lambda v: int(v.version), reverse=True)[0]
-    run_id = latest.run_id
-    logger.info(f"Loading model version {latest.version} from run {run_id}")
-    model = mlflow.xgboost.load_model(f"runs:/{run_id}/model")
-    local_path = client.download_artifacts(run_id, "label_encoder.pkl", "/tmp")
+    prod = client.get_model_version_by_alias(MLFLOW_MODEL_NAME, "production")
+    logger.info(f"Loading Production model version {prod.version} from run {prod.run_id}")
+    model = mlflow.xgboost.load_model(f"models:/{MLFLOW_MODEL_NAME}@production")
+    local_path = client.download_artifacts(prod.run_id, "label_encoder.pkl", "/tmp")
     with open(local_path, "rb") as f:
         label_encoder = pickle.load(f)
     logger.info("Model and label encoder loaded successfully")
-
-
-@app.on_event("startup")
-def startup_event():
-    load_model_and_encoder()
 
 
 @app.get("/health")

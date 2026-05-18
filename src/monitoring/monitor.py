@@ -4,6 +4,7 @@ from evidently.metric_preset import DataDriftPreset
 from evidently.metrics import DatasetSummaryMetric
 import os
 import logging
+from src.config import FEATURES
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -11,12 +12,6 @@ logger = logging.getLogger(__name__)
 REFERENCE_PATH = "data/processed/tracks_processed.csv"
 CURRENT_PATH = "data/monitoring/predictions.csv"
 REPORT_PATH = "data/monitoring/drift_report.html"
-
-FEATURES = [
-    'danceability', 'energy', 'key', 'loudness', 'mode',
-    'speechiness', 'acousticness', 'instrumentalness', 'liveness',
-    'valence', 'tempo', 'time_signature', 'duration_ms', 'explicit', 'year'
-]
 
 def run():
     logger.info("Loading reference data...")

@@ -100,6 +100,7 @@ services:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__WEBSERVER__SECRET_KEY: "spotify_mlops_secret"
       MLFLOW_TRACKING_URI: http://mlflow:5000
+      PYTHONPATH: /app
     command: scheduler
     volumes:
       - ./airflow/dags:/opt/airflow/dags

@@ -35,8 +35,13 @@ with DAG(
 
     promote = BashOperator(
         task_id="promote_model",
-        bash_command="echo 'Placeholder: would promote best model version in MLflow registry here'",
+        bash_command="cd /app && python src/training/promote.py",
+    )
+
+    monitor = BashOperator(
+        task_id="monitor_drift",
+        bash_command="cd /app && python src/monitoring/monitor.py",
     )
 
     # dependency chain
-    download >> preprocess >> train >> promote
+    download >> preprocess >> train >> promote >> monitor

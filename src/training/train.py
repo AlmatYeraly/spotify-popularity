@@ -9,6 +9,7 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import classification_report, accuracy_score, f1_score
 from xgboost import XGBClassifier
 import pickle
+from src.config import FEATURES, MLFLOW_EXPERIMENT, MLFLOW_MODEL_NAME
 
 MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI", "http://localhost:5000")
 mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
@@ -26,13 +27,6 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 PROCESSED_PATH = "data/processed/tracks_processed.csv"
-MLFLOW_EXPERIMENT = "spotify-popularity"
-
-FEATURES = [
-    'danceability', 'energy', 'key', 'loudness', 'mode',
-    'speechiness', 'acousticness', 'instrumentalness', 'liveness',
-    'valence', 'tempo', 'time_signature', 'duration_ms', 'explicit', 'year'
-]
 
 PARAMS = {
     "n_estimators": 100,
@@ -96,7 +90,7 @@ def train():
         mlflow.xgboost.log_model(
             model,
             name="model",
-            registered_model_name="spotify-popularity-classifier"
+            registered_model_name=MLFLOW_MODEL_NAME
         )
 
         # Save label encoder as artifact

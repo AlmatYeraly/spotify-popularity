@@ -8,6 +8,6 @@ RUN pip install --no-cache-dir -r requirements.train.txt
 COPY src/ ./src/
 COPY data/ ./data/
 
-CMD ["python", "src/training/train.py"]
-
 ENV GIT_PYTHON_REFRESH=quiet
+
+CMD ["python", "src/training/train.py"]

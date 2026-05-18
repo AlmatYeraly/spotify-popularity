@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import os
 import logging
+from src.config import FEATURES, POPULARITY_THRESHOLDS
 
 os.makedirs("logs", exist_ok=True)
 
@@ -18,14 +19,6 @@ logger = logging.getLogger(__name__)
 
 RAW_PATH = "data/raw/tracks.csv"
 PROCESSED_PATH = "data/processed/tracks_processed.csv"
-
-FEATURES = [
-    'danceability', 'energy', 'key', 'loudness', 'mode',
-    'speechiness', 'acousticness', 'instrumentalness', 'liveness',
-    'valence', 'tempo', 'time_signature', 'duration_ms', 'explicit', 'year'
-]
-
-POPULARITY_THRESHOLDS = {'low': 25, 'high': 50}
 
 def load_data(path: str) -> pd.DataFrame:
     logger.info(f"Loading data from {path}")
